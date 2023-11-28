@@ -8,14 +8,21 @@
 
 // GET /users => Buscando usuários do back-end
 // POST /users => Criar um usuário no back-end
-
 // Stateful (salva na memoria) - Stateless (náo salva nada em memoria, salva em BD ou arquivo de texto)
-
 // JSON - JavaScript Object Notation
-
 // Cabeçalhos (Requisição/resposta) => Metadados
-
 // HTTP Status Code
+
+// 3 ways to send information to the back-end:
+// Query Parameters: URL Stateful => Filters, pagination, not obligatory
+// http://localhost:3333/users?userId=1&name=Rodrigo (using query parameters)
+
+// Route Parameters: Resource identification
+// GET http://localhost:3333/users/1 (using route parameters)
+// DELETE http://localhost:3333/users/1
+
+// Request Body: To send form information, sensitive information like passwords (using HTTPS)
+// POST http://localhost:3333/users/
 
 import http from 'node:http';
 import { json } from './middlewares/json.js';
@@ -27,10 +34,14 @@ const server = http.createServer(async (req, res) => {
   await json(req, res);
 
   const route = routes.find((route) => {
-    return route.method === method && route.path === url;
+    return route.method === method && route.path.test(url);
   });
 
   if (route) {
+    const routeParams = req.url.match(route.path);
+
+    console.log(routeParams);
+
     return route.handler(req, res);
   }
 
